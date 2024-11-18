@@ -19,14 +19,14 @@ const TabNavigator = ({ activeTab = 'rooms', onTabChange }) => {
       id: 'airQuality', 
       label: 'Air Quality', 
       icon: Wind,
-      onPress: () => onTabChange('airQuality')
+      onPress: () => navigation.navigate('AirQuality')
     },
     { 
       id: 'profile', 
       label: 'Profile', 
       icon: User,
-      onPress: () => navigation.navigate('Profile', { theme })
-    },
+      onPress: () => navigation.navigate('Profile')
+    }
   ];
 
   return (

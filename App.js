@@ -8,7 +8,9 @@ import AuthScreen from './screens/AuthScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
+import AirQualityScreen from './screens/AirQualityScreen';
 import { auth } from './config';
+
 
 const Stack = createStackNavigator();
 
@@ -26,6 +28,7 @@ function AppContent() {
         <Stack.Screen name="GetStarted" component={GetStartedScreen} />
         <Stack.Screen name="Auth" component={AuthScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="AirQuality" component={AirQualityScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       </Stack.Navigator>

@@ -7,9 +7,16 @@ import RoomCards from '../components/RoomCards';
 import AirQuality from '../components/AirQuality';
 import TabNavigator from '../components/TabNavigator';
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('rooms');
   const { theme, isDarkMode, toggleTheme } = useTheme();
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (tab === 'airQuality') {
+      navigation.navigate('AirQuality');
+    }
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -40,7 +47,7 @@ export default function HomeScreen() {
       </ScrollView>
       <TabNavigator
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         theme={theme}
       />
     </SafeAreaView>

@@ -4,70 +4,92 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
+import { useTheme } from '../ThemeContext';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 4;
 
-const Header = ({ title, onBack, onSettings }) => (
-  <View style={styles.header}>
-    <TouchableOpacity onPress={onBack} style={styles.headerButton}>
-      <Ionicons name="chevron-back" size={24} color="#000" />
-    </TouchableOpacity>
-    <Text style={styles.headerTitle}>{title}</Text>
-    <TouchableOpacity onPress={onSettings} style={styles.headerButton}>
-      <Ionicons name="settings-outline" size={24} color="#000" />
-    </TouchableOpacity>
-  </View>
-);
-
-const StatusBar = ({ clearValue, days, temperature, humidity }) => (
-  <View style={styles.statusBar}>
-    <View style={styles.statusItem}>
-      <Ionicons name="checkmark-circle-outline" size={14} color="#666" />
-      <Text style={styles.statusText}>Clear {clearValue}</Text>
-    </View>
-    <View style={styles.statusItem}>
-      <Ionicons name="calendar-outline" size={14} color="#666" />
-      <Text style={styles.statusText}>{days} days left</Text>
-    </View>
-    <View style={styles.statusItem}>
-      <Ionicons name="thermometer-outline" size={14} color="#666" />
-      <Text style={styles.statusText}>{temperature}°C</Text>
-    </View>
-    <View style={styles.statusItem}>
-      <Ionicons name="water-outline" size={14} color="#666" />
-      <Text style={styles.statusText}>{humidity}%</Text>
-    </View>
-  </View>
-);
-
-const NavigationTabs = ({ activeTab, onTabChange }) => (
-  <View style={styles.tabs}>
-    {['Overview', 'Schedule', 'Statistics'].map((tab) => (
-      <TouchableOpacity
-        key={tab}
-        style={[styles.tab, activeTab === tab && styles.activeTab]}
-        onPress={() => onTabChange(tab)}
-      >
-        <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
-          {tab}
-        </Text>
+const Header = ({ title, onBack, onSettings, onThemeToggle, isDarkMode }) => {
+  const { theme } = useTheme();
+  return (
+    <View style={[styles.header, { backgroundColor: theme.cardBackground }]}>
+      <TouchableOpacity onPress={onBack} style={styles.headerButton}>
+        <Ionicons name="chevron-back" size={24} color={theme.text} />
       </TouchableOpacity>
-    ))}
-  </View>
-);
-
-const QualityIndicator = ({ value, label, status, color }) => (
-  <View style={styles.indicatorWrapper}>
-    <View style={styles.indicatorCard}>
-      <View style={[styles.indicatorCircle, { backgroundColor: color }]}>
-        <Text style={styles.indicatorValue}>{value}</Text>
+      <Text style={[styles.headerTitle, { color: theme.text }]}>{title}</Text>
+      <View style={styles.headerRightButtons}>
+        <TouchableOpacity onPress={onThemeToggle} style={styles.headerButton}>
+          <Ionicons name={isDarkMode ? "sunny" : "moon"} size={24} color={theme.text} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onSettings} style={styles.headerButton}>
+          <Ionicons name="settings-outline" size={24} color={theme.text} />
+        </TouchableOpacity>
       </View>
-      <Text style={styles.indicatorLabel}>{label}</Text>
-      <Text style={[styles.indicatorStatus, { color }]}>{status}</Text>
     </View>
-  </View>
-);
+  );
+};
+
+const StatusBar = ({ clearValue, days, temperature, humidity }) => {
+  const { theme } = useTheme();
+  return (
+    <View style={[styles.statusBar, { borderBottomColor: theme.borderColor }]}>
+      <View style={styles.statusItem}>
+        <Ionicons name="checkmark-circle-outline" size={14} color={theme.secondaryText} />
+        <Text style={[styles.statusText, { color: theme.secondaryText }]}>Clear {clearValue}</Text>
+      </View>
+      <View style={styles.statusItem}>
+        <Ionicons name="calendar-outline" size={14} color={theme.secondaryText} />
+        <Text style={[styles.statusText, { color: theme.secondaryText }]}>{days} days left</Text>
+      </View>
+      <View style={styles.statusItem}>
+        <Ionicons name="thermometer-outline" size={14} color={theme.secondaryText} />
+        <Text style={[styles.statusText, { color: theme.secondaryText }]}>{temperature}°C</Text>
+      </View>
+      <View style={styles.statusItem}>
+        <Ionicons name="water-outline" size={14} color={theme.secondaryText} />
+        <Text style={[styles.statusText, { color: theme.secondaryText }]}>{humidity}%</Text>
+      </View>
+    </View>
+  );
+};
+
+const NavigationTabs = ({ activeTab, onTabChange }) => {
+  const { theme } = useTheme();
+  return (
+    <View style={[styles.tabs, { borderBottomColor: theme.borderColor }]}>
+      {['Overview', 'Schedule', 'Statistics'].map((tab) => (
+        <TouchableOpacity
+          key={tab}
+          style={[styles.tab, activeTab === tab && styles.activeTab]}
+          onPress={() => onTabChange(tab)}
+        >
+          <Text style={[
+            styles.tabText,
+            { color: activeTab === tab ? theme.text : theme.secondaryText },
+            activeTab === tab && styles.activeTabText
+          ]}>
+            {tab}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
+
+const QualityIndicator = ({ value, label, status, color }) => {
+  const { theme } = useTheme();
+  return (
+    <View style={styles.indicatorWrapper}>
+      <View style={[styles.indicatorCard, { backgroundColor: theme.cardBackground }]}>
+        <View style={[styles.indicatorCircle, { backgroundColor: color }]}>
+          <Text style={styles.indicatorValue}>{value}</Text>
+        </View>
+        <Text style={[styles.indicatorLabel, { color: theme.secondaryText }]}>{label}</Text>
+        <Text style={[styles.indicatorStatus, { color }]}>{status}</Text>
+      </View>
+    </View>
+  );
+};
 
 const CustomSwitch = ({ isOn, onToggle }) => (
   <TouchableOpacity
@@ -78,16 +100,19 @@ const CustomSwitch = ({ isOn, onToggle }) => (
   </TouchableOpacity>
 );
 
-const ModeToggle = ({ icon, label, isActive, onToggle }) => (
-  <View style={styles.modeCard}>
-    <Ionicons name={icon} size={24} color={isActive ? "#007AFF" : "#666"} />
-    <Text style={[styles.modeLabel, isActive && styles.modeLabelActive]}>{label}</Text>
-    <View style={styles.switchWrapper}>
-      <Text style={styles.switchLabel}>{isActive ? 'ON' : 'OFF'}</Text>
-      <CustomSwitch isOn={isActive} onToggle={onToggle} />
+const ModeToggle = ({ icon, label, isActive, onToggle }) => {
+  const { theme } = useTheme();
+  return (
+    <View style={[styles.modeCard, { backgroundColor: theme.cardBackground }]}>
+      <Ionicons name={icon} size={24} color={isActive ? "#007AFF" : theme.secondaryText} />
+      <Text style={[styles.modeLabel, isActive ? styles.modeLabelActive : { color: theme.secondaryText }]}>{label}</Text>
+      <View style={styles.switchWrapper}>
+        <Text style={[styles.switchLabel, { color: theme.secondaryText }]}>{isActive ? 'ON' : 'OFF'}</Text>
+        <CustomSwitch isOn={isActive} onToggle={onToggle} />
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 const FanSpeedScale = () => (
   <View style={styles.fanSpeedScale}>
@@ -103,37 +128,44 @@ const FanSpeedScale = () => (
   </View>
 );
 
-const FanController = ({ value, onValueChange }) => (
-  <View style={styles.fanControllerWrapper}>
-    <LinearGradient
-      colors={['#1a237e', '#4a148c']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
-      style={styles.fanController}
-    >
-      <View style={styles.fanIconLeft}>
-        <Ionicons name="fan" size={20} color="rgba(255,255,255,0.5)" />
-      </View>
-      <View style={styles.fanIconRight}>
-        <Ionicons name="fan" size={20} color="rgba(255,255,255,0.5)" />
-      </View>
-      <FanSpeedScale />
-      <View style={styles.sliderPointer} />
-      <Slider
-        style={styles.slider}
-        minimumValue={0}
-        maximumValue={100}
-        value={value}
-        onValueChange={onValueChange}
-        minimumTrackTintColor="transparent"
-        maximumTrackTintColor="transparent"
-        thumbStyle={styles.sliderThumb}
-      />
-    </LinearGradient>
-  </View>
-);
+const FanController = ({ value, onValueChange }) => {
+  const { isDarkMode } = useTheme();
+  const lightGradientColors = ['#1a237e', '#4a148c'];
+  const darkGradientColors = ['#303F9F', '#7B1FA2'];
+
+  return (
+    <View style={styles.fanControllerWrapper}>
+      <LinearGradient
+        colors={isDarkMode ? darkGradientColors : lightGradientColors}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.fanController}
+      >
+        <View style={styles.fanIconLeft}>
+          <Ionicons name="fan" size={20} color="rgba(255,255,255,0.5)" />
+        </View>
+        <View style={styles.fanIconRight}>
+          <Ionicons name="fan" size={20} color="rgba(255,255,255,0.5)" />
+        </View>
+        <FanSpeedScale />
+        <View style={styles.sliderPointer} />
+        <Slider
+          style={styles.slider}
+          minimumValue={0}
+          maximumValue={100}
+          value={value}
+          onValueChange={onValueChange}
+          minimumTrackTintColor="transparent"
+          maximumTrackTintColor="transparent"
+          thumbStyle={styles.sliderThumb}
+        />
+      </LinearGradient>
+    </View>
+  );
+};
 
 export default function AirQualityScreen({ navigation }) {
+  const { theme, isDarkMode, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('Overview');
   const [fanSpeed, setFanSpeed] = useState(50);
   const [modes, setModes] = useState({
@@ -150,11 +182,13 @@ export default function AirQualityScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Header
         title="Living room"
         onBack={() => navigation.goBack()}
         onSettings={() => navigation.navigate('Settings')}
+        onThemeToggle={toggleTheme}
+        isDarkMode={isDarkMode}
       />
       
       <StatusBar
@@ -178,7 +212,7 @@ export default function AirQualityScreen({ navigation }) {
         </View>
         
         <View style={styles.modesSection}>
-          <Text style={styles.modesTitle}>Modes</Text>
+          <Text style={[styles.modesTitle, { color: theme.text }]}>Modes</Text>
           <View style={styles.modesGrid}>
             <ModeToggle
               icon="sync"
@@ -210,7 +244,6 @@ export default function AirQualityScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
@@ -222,6 +255,9 @@ const styles = StyleSheet.create({
   headerButton: {
     padding: 8,
   },
+  headerRightButtons: {
+    flexDirection: 'row',
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
@@ -231,7 +267,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
   statusItem: {
     flexDirection: 'row',
@@ -240,13 +275,11 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
-    color: '#666',
   },
   tabs: {
     flexDirection: 'row',
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
   tab: {
     paddingVertical: 12,
@@ -277,7 +310,6 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
   },
   indicatorCard: {
-    backgroundColor: '#fff',
     borderRadius: 20,
     padding: 12,
     alignItems: 'center',
@@ -302,7 +334,6 @@ const styles = StyleSheet.create({
   },
   indicatorLabel: {
     fontSize: 12,
-    color: '#666',
     fontWeight: '500',
   },
   indicatorStatus: {
@@ -317,7 +348,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
-    color: '#1a1a1a',
   },
   modesGrid: {
     flexDirection: 'row',
@@ -326,7 +356,6 @@ const styles = StyleSheet.create({
   },
   modeCard: {
     flex: 1,
-    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 16,
     alignItems: 'center',
@@ -338,7 +367,6 @@ const styles = StyleSheet.create({
   },
   modeLabel: {
     fontSize: 12,
-    color: '#666',
     marginVertical: 8,
     fontWeight: '500',
   },
@@ -351,7 +379,6 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     fontSize: 10,
-    color: '#666',
     fontWeight: '500',
   },
   switchTrack: {
